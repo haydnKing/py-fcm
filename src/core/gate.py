@@ -297,17 +297,8 @@ def points_in_poly(vs, ps):
     #     idx = numpy.prod((ps > numpy.min(vs, 0)) & (ps < numpy.max(vs, 0)),1)
     #     ps = ps[idx.astype('bool'), :]
 
-    j = len(vs) - 1
-    inPoly = numpy.zeros((len(vs), len(ps)), 'bool')
-
-    for i, v in enumerate(vs):
-        inPoly[i, :] |= ((v[0] < ps[:, 0]) & (vs[j, 0] >= ps[:, 0])) | (
-            (vs[j, 0] < ps[:, 0]) & (v[0] >= ps[:, 0]))
-        inPoly[i, :] &= (
-            v[1] + (ps[:, 0] - v[0]) / (vs[j, 0] - v[0]) * (vs[j, 1] - v[1]) < ps[:, 1])
-        j = i
-
-    return numpy.bitwise_or.reduce(inPoly, 0)
+    p = Path(numpy.append(vs, [vs[0]], axis=0), closed=True)
+    return p.contains_points(ps)
 
 if __name__ == '__main__':
     vertices = numpy.array([[5, 5], [10, 5], [10, 10], [5, 10]], 'd')
